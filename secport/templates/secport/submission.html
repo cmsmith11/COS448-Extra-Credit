@@ -1,0 +1,575 @@
+<!DOCTYPE html/>
+<html>
+    <head>
+        {% load static %}
+        <script src="{% static 'secport/jquery.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'secport/submission.css' %}">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ group }}</title>
+    </head>
+    <body>
+        {% csrf_token %}
+        <!-- <img src="{% static 'secport/images/test_tiger.jpeg' %}"> -->
+        <div class='sub_prompt_container'>
+            <div class='group' id='group_name'>{{ group }}</div>
+            {% if parent_num %}
+            {% if type == "comment" %}
+                <div class='prompt_title'>Commenting on Submission&nbsp#{{ parent_num }}</div>
+            {% else %}
+                <div class='prompt_title'>Replying to Comment&nbsp#{{ parent_num }}</div>
+            {% endif %}
+                <div class='spaceme pre_prompt'>"{{ parent_content }}"</div>
+            {% else %}
+                <div class='prompt_title'>Making Submission</div>
+                <div class='pre_prompt'>
+                    Welcome to {{ group }}, a fun and safe place to share your voice anonymously. 
+                    This is the Decent Mod portal for submitting to {{group}}. Submit responsibly.<br/><br/>
+
+                    To make a submission, type in the textbox below. To make a comment or reply to an 
+                    anonymous submission, hit the highlighted "Comment" text below, and you will be 
+                    redirected to the appropriate submission portal. Be cognizant of what you are 
+                    submitting. Real people will see what you write, and your words can have a real 
+                    effect on people. Be nice, be respectful, be smart.<br/><br/>
+
+                    Your submission will be moderated by a random sample of the community which you are 
+                    submitting to. To make this system work, you will be required to moderate a handful of 
+                    submissions before your submission is finalized. The quality of the community which 
+                    you are submitting to depends on a critical mass of faithful contributors.<br/><br/>
+
+                    You may want to consider attaching a Rep-Secret to your submissions. This is an 
+                    anonymous pseudonym which is associated with posts it is attached to. If you submit a 
+                    post using a Rep-Secret, you can come back at a later time and check the status, and 
+                    (if posted) the submission # of the submission. Pick a secure Rep-Secret to ensure 
+                    that no one else will use it, and DO NOT use a password you have used for 
+                    another site, or input any personally identifiable information.<br/><br/>
+
+                    Each time you use a Rep-Secret, you will accumulate a Rep-Score, based on how 
+                    successfully you moderate. As long as the moderations tend to agree with how most 
+                    others moderate, your Rep-Score will increase. Higher Rep-Scores give users certain 
+                    privileges, such as submissions being posted quicker and moderations holding a higher 
+                    weight.<br/><br/>
+
+                    Finally, while this system is designed to be as autonomous and user-controlled as 
+                    possible, there will be a set of human eyes passing over every submission, at least 
+                    until it seems that mostly all bugs are worked out. If you have any questions or would 
+                    like to contact the team, you can message the group admin directly via platform of your 
+                    choice, or by sending an email to 
+                    <a href='mailto:decentmodteam@gmail.com'>decentmodteam@gmail.com</a>.<br/>
+                </div>
+            {% endif %}
+            <div class='sub_prompt'>
+                <div class='sub_box'>
+                    {% if parent_num %}
+                        {% if type == "comment" %}
+                        <div class='body_text'>Submit comment to Submission&nbsp#{{parent_num}}</div>
+                        {% else %}
+                        <div class='body_text'>Submit reply to Comment&nbsp#{{parent_num}}</div>
+                        {% endif %}
+                    {% else %}
+                        <div class='body_text'>Submit below or <span class='hint' id='comment_hint'>Comment</span> on existing post.</div>
+                    {% endif %}
+                    <textarea id="sub_content" rows="8" placeholder='Type here... Be nice, be respectful, be smart :)'></textarea>
+                    <button id='submit' class='nice_button'>Submit</button>
+                    {% if parent_num %}
+                        <span class='toggle_op'>
+                    {% else %}
+                        <span class='toggle_copy'>
+                    {% endif %}
+                            <label class="switch">
+                              <input id='toggle' type="checkbox" onchange="toggleColor()" checked>
+                              <span id='slide_round' class="slider round"></span>
+                            </label>
+                            {% if parent_num %}
+                                <span class='body_text'>Reply as OP?</span>
+                            {% else %}
+                                <span class='body_text'>Copy to TC#?</span>
+                            {% endif %}
+                        </span>
+                </div>
+                <div class='rep_box'>
+                    <div class='body_text' id='rep_secret'>Rep-Secret: <a class='hint' id='rep_desc'>(What's This?)</a></div>
+                    <input id='rep_secret_input' placeholder='Optional (recommended)' type='password'/>
+                    <button id='rep_btn'>Check</button>&nbsp<button id='rep_hide_btn'>Hide</button>
+                    <div id='rep_stats'>
+                        <div id=last_used></div>
+                        <div id=rep_score></div>
+                        <div id=t1_err></div>
+                        <div id=t2_err></div>
+                        <div id=subs_list_head></div>
+                        <span id=subs_list class="hint"></span>
+                    </div>
+                </div>
+            </div>
+            <div class='foot_link'>
+                <a href="/">Home</a>
+            </div>
+            <div class='foot_link'>
+                {% if fb_url != "https://facebook.com" %}
+                <a href="{{fb_url}}" rel='noopener noreferrer' target='_blank'>Facebook</a>
+                {% endif %}
+            </div>
+            <div class='foot_link'>
+                {% if ig_url != "https://instagram.com" %}
+                <a href="{{ig_url}}" rel='noopener noreferrer' target='_blank'>Instagram</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class='mod_prompt_container'>
+            <div class='group'>{{ group }}</div>
+            <div class='pre_prompt mod_pre_prompt'>
+                Would you support posting this pending submission publicly to each of the following platforms?:
+                <ul>• <a href='{{fb_url}}' rel='noopener noreferrer' target='_blank'>Facebook</a></ul>
+                <ul>• <a href='{{ig_url}}' rel='noopener noreferrer' target='_blank'>Instagram</a></ul>
+            </div>
+            <div class='mod_prompt'>
+                <div class='title'>Pending <span id='mod_type'>in span</span>:</div>
+                <!-- <div>Would you allow this pending submission to be posted publicly to Facebook and Instagram?</div> -->
+                <div class='spaceme' id='response_msg'>
+                    Filler pre-moderated submission. I'm making this a little longer so it hopefully takes up multiple lines.
+                    perhaps this works. I think its long enough now.
+                </div>
+                <div id='cw_dropdown'>
+                    <div class='dropdown_desc'>(Optional) Select all that apply:</div>
+                    <input type='checkbox' id='cw1'><label for='cw1'>Self Harm</label><br/>
+                    <input type='checkbox' id='cw2'><label for='cw2'>Violence</label><br/>
+                    <input type='checkbox' id='cw3'><label for='cw3'>Substance Abuse</label><br/>
+                    <input type='checkbox' id='cw4'><label for='cw4'>NSFW</label><br/>
+                    <input type='checkbox' id='cw5'><label for='cw5'>Spoiler</label><br/>
+                    <input type='checkbox' id='cw6'><label for='cw6'>Other</label><br/>
+                </div>
+                <div id='show_cw' class='hint'>
+                    Needs CW?
+                </div>
+                <div class='mod_footer'>
+                    <div class='mod_foot mod_top_foot'>
+                        <button class='mod_button nice_button' id='ok'> Allow </button>
+                        <button class='mod_button nice_button' id='not_ok'> Not&nbspAllow </button>
+                    </div>
+                    <div class='mod_foot mod_bottom_foot'>
+                        <div id='mod_info'>Moderations Left: 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id='dark'></div>
+        <div class='info_box'>
+            <div class='title' id='info_head'></div>
+            <div id='info'></div>
+            <div class='info_footer'><button id='info_btn'>Close</button></div>
+        </div>
+
+    </body>
+    <script>
+        console.log('hello javascript!');
+        console.log('{{type}}')
+
+        // set styling of colors
+        document.querySelectorAll('.group').forEach(c => {
+            c.style.color = '{{color1}}'; //'#f58025'; // color 1
+            c.style.backgroundColor = '{{color2}}'; //'#000000'; // color 2
+        });
+        document.querySelectorAll('.prompt_title').forEach(c => {
+            c.style.backgroundColor = '{{color2}}'; //'#000000'; // color 2
+        });
+        document.querySelectorAll('.hint').forEach(c => {
+            c.style.color = '{{color3}}'; //'#e77500'; // color 3
+        });
+        document.querySelectorAll('.nice_button').forEach(c => {
+            c.style.backgroundColor = '{{color3}}'; //'#e77500'; // color 3
+        });
+        document.body.style.backgroundColor = '{{color4}}'; //'#fff1dc'; // color 4
+        document.getElementById('slide_round').style.backgroundColor = '{{color3}}'; //'#e77500'; // color 3
+
+        function toggleColor() {
+            var check = document.getElementById('toggle');
+            var change = document.getElementById('slide_round');
+            if (check.checked) {
+                 change.style.backgroundColor = '{{color3}}'; //'#e77500'; // color 3
+            } else {
+                 change.style.backgroundColor = '#ccc';
+            }
+        }
+        // 1 more instance of changing color in show_go_to_comment_prompt()
+
+        //////////////////////////////////////////////////////////////////////
+
+        // headers
+        const INIT = 'init'
+        const MOD = 'mod'
+        const SUBMITTED = 'submitted'
+        const REP_STATS = 'rep_stats'
+        // sub types
+        const CONFESSION = 'confession'
+        const COMMENT = 'comment'
+        const REPLY = 'reply'
+        // statuses
+        const PENDING = 'pending'
+        const REJECTED = 'rejected'
+        const ACCEPTED = 'accepted'
+        const POSTED = 'posted'
+        // hard coded (long) texts
+        const completed_submission_text = 'Your submission has been submitted for review. The average time between submission and publish time is {}. If you submitted your submission with your Rep-Secret, you can check the status of this and all past submissions by entering your Rep-Secret on the main submission page.'
+        const rep_sec_info = "Attach a secret pseudonym to your submissions. Benefits include the ability to check old submissions' post statuses, quicker time to post, and <a href='/#Rep-Secret-Description' rel='noopener noreferrer' target='_blank'>more</a>. Do NOT share your Rep-Secret with anyone."
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function short_date(dtstr) {
+            dt = new Date(dtstr);
+            let year = String(dt.getFullYear()).substring(2,4);
+            let month = dt.getMonth() + 1;
+            let day = dt.getDate();
+            return month + '/' + day + '/' + year;
+        }
+
+        function short_time(dtstr) {
+            dt = new Date(dtstr);
+            let hour24 = dt.getHours();
+            let minute = dt.getMinutes();
+            let ampm = hour24 < 12 ? 'am' : 'pm';
+            let hour = (hour24 % 12) == 0 ? 12 : (hour24 % 12);
+            return hour + ':' + String(minute).padStart(2,'0') + ampm;
+        }
+
+        function short_dt(dtstr) {
+            return short_date(dtstr) + ',&nbsp' + short_time(dtstr);
+            // return '08/08/22, 12:00pm';
+        }
+
+        function sec_to_time(sec) {
+            let days = Math.floor(sec / 60 / 60 / 24)
+            sec = sec - (days * 60 * 60 * 24)
+            let hours = Math.floor(sec / 60 / 60)
+            sec = sec - (hours * 60 * 60)
+            let minutes = Math.floor(sec / 60)
+            sec = sec - (minutes * 60)
+            let seconds = Math.floor(sec)
+            return days + ' day' + (days == 1 ? '' : 's') + ', ' + 
+                hours + ' hour' + (hours == 1 ? '' : 's') + ', ' + 
+                minutes + ' minute' + (minutes == 1 ? '' : 's') + ', and ' + 
+                seconds + ' second' + (seconds == 1 ? '' : 's')
+        }
+
+        function sanitize(text) {
+            return $('<div>').text(text).html();
+        }
+
+        function info_row_html(label, value) {
+            return "<div class='info_row'><div class='info_label'>" + label + "</div><div class='info_value'>" + value + "</div></div>";
+        }
+
+        function nice(db_name) {
+            if (db_name == PENDING)
+                return 'Pending';
+            else if (db_name == REJECTED)
+                return 'Rejected';
+            else if (db_name == ACCEPTED)
+                return 'Accepted';
+            else if (db_name == POSTED)
+                return 'Posted';
+            else if (db_name == CONFESSION)
+                return 'Submission';
+            else if (db_name == COMMENT)
+                return 'Comment';
+            else if (db_name == REPLY)
+                return 'Reply'
+            else return db_name;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        const csrftoken = getCookie('csrftoken');
+        const type = '{{type}}';
+        const parent_num = (type == CONFESSION) ? null : '{{parent_num}}';
+        console.log('parent_num:', parent_num);
+        var as_op = false;
+        var modded = [];
+        var subs = {};
+
+        function rec_repstats(response) {
+            // response = { header, [last_used, rep_score, t1_err, t2_err, subs_list, percentiles, op_reply] }
+            // subs_list[0] = { id, group, type, content, yays, nays, status, sub_num, parent_num, dt_sub, dt_decided }
+            // percentiles = [t1_error, t2_error, rep-score]
+            if (!('rep_score' in response)) {
+                // $('#rep_score').text('N/A');
+                //$('#rep_stats').html('This Rep-Secret has never been used.');
+                $('#last_used').html("This Rep-Secret has never been used.");
+                $('#rep_score').html("");
+                $('#t1_err').html("");
+                $('#t2_err').html("");
+                $('#subs_list_head').html("");
+                $('#subs_list').html("");
+                return;
+            }
+            subs = {}
+            let subs_list = response.subs_list;
+            let pcts = response.percentiles
+            for (i = 0; i < pcts.length; i++)
+                pcts[i] = pcts[i].toFixed(0)
+            // let last_used_html = "<div>Last&nbspUsed:&nbsp" + short_dt(response.last_used) + "</div>";
+            // let rep_score_html = "<div>Rep-Score:&nbsp" + response.rep_score.toFixed(3) + "&nbsp(" + pcts[2] + "%ile)</div>";
+            // let t1_err = "<div>Type I Error:&nbsp" + response.t1_err.toFixed(3) + "&nbsp(" + pcts[0] + "%ile)</div>";
+            // let t2_err = "<div>Type II Error:&nbsp" + response.t2_err.toFixed(3) + "&nbsp(" + pcts[1] + "%ile)</div>";
+
+            $('#last_used').html("Last&nbspUsed:&nbsp" + short_dt(response.last_used));
+            $('#rep_score').html("Rep-Score:&nbsp" + response.rep_score.toFixed(3) + "&nbsp(" + pcts[2] + "%ile)");
+            $('#t1_err').html("Type I Error:&nbsp" + response.t1_err.toFixed(3) + "&nbsp(" + pcts[0] + "%ile)");
+            $('#t2_err').html("Type II Error:&nbsp" + response.t2_err.toFixed(3) + "&nbsp(" + pcts[1] + "%ile)");
+            $('#subs_list_head').html("Past Submissions:");
+
+            // let subs_list_html = '<div>Past Submissions:</div><span class="hint">';
+            // // construct html
+            // for (const s of subs_list) {
+            //     subs[s.id] = s;
+            //     let innerHTML = info_row_html(short_date(s.dt_sub), nice(s.status));
+            //     subs_list_html += '<div id="' + s.id + '" onclick="show_sub_dets(\'' + s.id + '\')">' + innerHTML + '</div>';
+            // }
+            // subs_list_html += '</span>'
+            // $('#rep_stats').html(last_used_html + rep_score_html + t1_err + t2_err + subs_list_html);
+
+            let subs_list_html = ''
+            for (const s of subs_list) {
+                subs[s.id] = s;
+                let innerHTML = info_row_html(short_date(s.dt_sub), nice(s.status));
+                subs_list_html += '<div id="' + s.id + '" onclick="show_sub_dets(\'' + s.id + '\')">' + innerHTML + '</div>';
+            }
+            $('#subs_list').html(subs_list_html);
+
+            if (response.op_reply) {
+                $('.toggle_op').show();
+                as_op = true;
+            } else {
+                $('.toggle_op').hide();
+            }
+        }
+
+        function rec_mod(response) {
+            // response = { header, mods_left, mod_id, mod_type, mod_content }
+            modded.push(response.mod_id); // ensure we don't moderate same sub twice
+            $('.mod_prompt_container').show();
+            $('#response_msg').text(response.mod_content); // more to mod
+            $('#mod_type').text(nice(response.mod_type));
+            $('#mod_info').html("Moderations&nbspLeft:&nbsp" + response.mods_left);
+            $('#cw_dropdown').hide();
+            $('#show_cw').show();
+            for (let i = 1; i <= 6; i++)
+                $('#cw'+i).prop('checked', false);
+        }
+
+        function rec_submitted(response) {
+            // response = { header, avg_delay }
+            $('.mod_prompt_container').hide();
+            $('#response_msg').text(''); // clear mod content
+            $('#mod_info').text(''); // left to mod number
+            $('#sub_content').val(''); // clear submission box
+            $('#rep_secret_input').val(''); // clear rep-secret box
+            hide_rep_stats();
+            $('.sub_prompt_container').show();
+            let head = 'Submission Under Review';
+            let body = completed_submission_text.replace('{}', sec_to_time(response.avg_delay));
+            show_info(head, body);
+            modded = [] // reset moderated list
+        }
+
+        function receive_response(response) {
+            if ('header' in response) {
+                header = response.header;
+                if (header == REP_STATS) {
+                    rec_repstats(response);
+                } else if (header == MOD) {
+                    rec_mod(response);
+                } else if (header == SUBMITTED) {
+                    rec_submitted(response);
+                } else {
+                    console.log('unknown header:', header)
+                }
+            } else {
+                console.log('no header')
+            }
+        }
+
+        function send_json(json_data) {
+            let xhr = new XMLHttpRequest();
+            let url = "";
+            console.log('url', url)
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    console.log('GOT RESPONSE:', response);
+                    receive_response(response)
+                }
+            };
+            let data = JSON.stringify(json_data);
+            xhr.send(data);
+        }
+
+        function show_sub_dets(id) {
+            s = subs[id];
+            let head = '';
+            if (s.status == PENDING || s.status == REJECTED)
+                head += nice(s.status) + ' ';
+            head += nice(s.type);
+            if (s.type == COMMENT)
+                head += ' to Submission';
+            else if (s.type == REPLY)
+                head += ' to Comment';
+            if (s.type != CONFESSION)
+                head += '&nbsp#' + s.parent_num;
+            else if (s.status == ACCEPTED || s.status == POSTED)
+                head += '&nbsp#' + s.sub_num;
+            let body = info_row_html('Submitted:', short_dt(s.dt_sub));
+            if (s.status != PENDING) {
+                body += info_row_html('Moderated:', short_dt(s.dt_decided));
+            }
+            fitted_content = s.content.length > 200 ? s.content.substring(0,200) + '...' : s.content
+            body += '<div class="spaceme">' + sanitize(fitted_content) + '</div>';
+            show_info(head, body);
+        }
+
+        function show_info(head, body) {
+            $('#dark').show();
+            $('#info_head').html(head);
+            $('#info').html(body);
+            $('.info_box').show();
+        }
+
+        function hide_info() {
+            $('.info_box').hide();
+            $('#dark').hide();
+        }
+
+        function show_rep_stats() {
+            let rep_secret = $('#rep_secret_input').val();
+            get_rep_stats(rep_secret);
+            $('#rep_secret_input').attr('type', 'text');
+            $('#rep_stats').show();
+            $('#rep_hide_btn').show();
+        }
+
+        function hide_rep_stats() {
+            $('#rep_secret_input').attr('type', 'password');
+            $('#rep_stats').hide();
+            $('#rep_hide_btn').hide();
+        }
+
+        function get_rep_stats(rep_secret) {
+            data = {
+                'header': REP_STATS,
+                'rep_secret': rep_secret,
+                'parent_num': parent_num
+            }
+            send_json(data);
+        }
+
+        function show_go_to_comment_prompt() {
+            let head = 'Make Comment';
+            let body = 'Leave an anonymous comment on existing submission post?<br/><br/>';
+            body += 'Submission #<input class="short_input" id="parent_num_input" placeholder="12345"/>&nbsp';
+            body += '<button class="nice_button" id="go_btn" onclick="go_to_comment()">Go</button><br/>';
+            show_info(head, body);
+            document.getElementById('go_btn').style.backgroundColor = '{{color3}}'; //'#e77500'; // color 3
+        }
+
+        function go_to_comment() {
+            let num = $('#parent_num_input').val().trim();
+            if (num != '' && Number.isInteger(Number(num.replace(/\./g, '')))) {
+                window.open('/{{group}}/'+ num, '_blank');
+            } else {
+                alert(
+                    'Enter a valid submission (or comment) number. ' +
+                    'Non-existing submission numbers ' +
+                    'will lead to a 404 Not Found Error.'
+                );
+            }
+        }
+
+        function init_sub(e) {
+            e.preventDefault();
+
+            data = {
+                'header': INIT,
+                'parent_num': parent_num,
+                'sub_content': $('#sub_content').val(),
+                'rep_secret': $('#rep_secret_input').val(),
+                'modded': [],
+                'toggle': $('#toggle').is(":checked") && (as_op || parent_num == null)
+            }
+            if (data.sub_content != '') {
+                send_json(data);
+                $('.sub_prompt_container').hide();
+            } else {
+                $('#sub_content').attr('placeholder','Write something first silly!');
+            }
+        }
+
+        function moderate(e, decision) {
+            e.preventDefault();
+            let quality = 0
+            // if (document.getElementById('like').checked) quality = 1
+            // else if (document.getElementById('dislike').checked) quality = -1
+            let cw = {
+                'cw1': $('#cw1').is(":checked"),
+                'cw2': $('#cw2').is(":checked"),
+                'cw3': $('#cw3').is(":checked"),
+                'cw4': $('#cw4').is(":checked"),
+                'cw5': $('#cw5').is(":checked"),
+                'cw6': $('#cw6').is(":checked")
+            }
+            data = {
+                'header': MOD,
+                'parent_num': parent_num,
+                'sub_content': $('#sub_content').val(),
+                'rep_secret': $('#rep_secret_input').val(),
+                'modded': modded,
+                'toggle': $('#toggle').is(":checked") && (as_op || parent_num == null),
+                'yay': decision,
+                'quality': quality,
+                'cw': cw
+            };
+            if (data.sub_content != '') {
+                send_json(data);
+            }
+        }
+
+        // group title
+        $('#group_name').on('click', function(e) { window.location.href = '/{{group}}'; });
+        // submit button
+        $('#submit').on('click', function(e) { init_sub(e); });
+        // OK button
+        $('#ok').on('click', function(e) { moderate(e, true); });
+        // NOT OK button
+        $('#not_ok').on('click', function(e) { moderate(e, false); });
+        // Check Rep-Stats button
+        $('#rep_btn').on('click', function(e) { show_rep_stats(); });
+        // Hide Rep-Stats button
+        $('#rep_hide_btn').on('click', function(e) { hide_rep_stats(); });
+        // Hides info box
+        $('#info_btn').on('click', function(e) { hide_info(); });
+        // shows rep description
+        $('#rep_desc').on('click', function(e) { show_info('Rep-Secret', rep_sec_info); });
+        // (new) Go to comment pop-up button
+        $('#comment_hint').on('click', function(e) { show_go_to_comment_prompt(e); });
+        // CW drop down show
+        $('#show_cw').on('click', function(e) { $('#cw_dropdown').show(); $('#show_cw').hide(); })
+
+    </script>
+</html>

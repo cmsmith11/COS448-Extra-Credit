@@ -1,0 +1,138 @@
+<!DOCTYPE html/>
+<html>
+    <head>
+        {% load static %}
+        <script src="{% static 'secport/jquery.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'secport/submission.css' %}">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ group }}</title>
+    </head>
+    <body>
+        {% csrf_token %}
+
+        <div style="position: relative; top: 50%; transform: translateY(-50%);">
+        	<div class='mod_prompt_container' id='submission'>
+	            <div class='group'>Make Submission</div>
+	            <div class='pre_prompt mod_pre_prompt'>
+	                Make anonymous submission to {{ group }}
+	            </div>
+	        </div>
+	        <div class='mod_prompt_container' id='comment'>
+	            <div class='group'>Make Comment</div>
+	            <div class='pre_prompt mod_pre_prompt'>
+	                Make sure you know the post # !
+	            </div>
+	        </div>
+	        <div class='mod_prompt_container' id='feedback'>
+	            <div class='group'>Provide Feedback</div>
+	            <div class='pre_prompt mod_pre_prompt'>
+	                Chance to win $10! (extended to 12/15!)
+	            </div>
+	        </div>
+        </div>
+        
+        <div id='dark'></div>
+        <div class='info_box'>
+            <div class='title' id='info_head'></div>
+            <div id='info'></div>
+            <div class='info_footer'><button id='info_btn'>Close</button></div>
+        </div>
+
+    </body>
+    <script>
+
+        // set styling of colors
+        document.querySelectorAll('.group').forEach(c => {
+            c.style.color = '{{color1}}'; // color 1
+            c.style.backgroundColor = '{{color2}}'; // color 2
+        });
+        document.querySelectorAll('.prompt_title').forEach(c => {
+            c.style.backgroundColor = '{{color2}}'; // color 2
+        });
+        document.querySelectorAll('.hint').forEach(c => {
+            c.style.color = '{{color3}}'; // color 3
+        });
+        document.querySelectorAll('.nice_button').forEach(c => {
+            c.style.backgroundColor = '{{color3}}'; // color 3
+        });
+        document.body.style.backgroundColor = '{{color4}}'; // color 4
+
+        // 1 more instance of changing color in show_go_to_comment_prompt()
+
+        document.querySelectorAll('.mod_prompt_container').forEach(c => {
+        	c.style.display = 'block';
+        	//c.style.cursor = 'pointer';
+        })
+
+        //////////////////////////////////////////////////////////////////////
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sanitize(text) {
+            return $('<div>').text(text).html();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        const csrftoken = getCookie('csrftoken');
+
+        function show_info(head, body) {
+            $('#dark').show();
+            $('#info_head').html(head);
+            $('#info').html(body);
+            $('.info_box').show();
+        }
+
+        function hide_info() {
+            $('.info_box').hide();
+            $('#dark').hide();
+        }
+
+        function show_go_to_comment_prompt() {
+            let head = 'Make Comment';
+            let body = 'Leave an anonymous comment on existing submission post?<br/><br/>';
+            body += 'Submission #<input class="short_input" id="parent_num_input" placeholder="12345"/>&nbsp';
+            body += '<button class="nice_button" id="go_btn" onclick="go_to_comment()">Go</button><br/>';
+            show_info(head, body);
+            document.getElementById('go_btn').style.backgroundColor = '{{color3}}'; //'#e77500'; // color 3
+        }
+
+        function go_to_comment() {
+            let num = $('#parent_num_input').val().trim();
+            if (num != '' && Number.isInteger(Number(num.replace(/\./g, '')))) {
+                window.open('/{{group}}/'+ num, '_blank');
+            } else {
+                alert(
+                    'Enter a valid submission (or comment) number. ' +
+                    'Non-existing submission numbers ' +
+                    'will lead to a 404 Not Found Error.'
+                );
+            }
+        }
+
+        // Submission
+        $('#submission').on('click', function(e) { window.location.href = '/{{group}}'; });
+        // Feedback
+        $('#feedback').on('click', function(e) { window.open('https://docs.google.com/forms/d/e/1FAIpQLSdWr3FV6JOETAhWkZpRb_k6Z8vfsxdc0Q2P0CQeTXn2zxH75g/viewform?usp=sf_link', '_blank', 'noopener noreferrer') });
+        // Hides info box
+        $('#info_btn').on('click', function(e) { hide_info(); });
+        // (new) Go to comment pop-up button
+        $('#comment').on('click', function(e) { show_go_to_comment_prompt(e); });
+
+    </script>
+</html>

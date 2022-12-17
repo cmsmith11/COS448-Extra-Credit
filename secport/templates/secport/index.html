@@ -1,0 +1,471 @@
+<!DOCTYPE html/>
+<html>
+    <head>
+        {% load static %}
+        <script src="{% static 'secport/jquery.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'secport/submission.css' %}">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Decent Mod</title>
+    </head>
+    <body style="background: #cdcdcd;">
+        {% csrf_token %}
+        <div class='sub_prompt_container'>
+            <div class='group' id='group_name' style="color: #ffffff; background: #000000;">
+                Decent Mod Home
+            </div>
+            <div class='no_prompt'>
+                Welcome to Decent Mod. This may be a bit confusing. This page is here to help.<br/>
+
+                <h3>TLDR:</h3>
+                Decent Mod is a tool used in conjunction with social media 
+                platforms to provide a way for users to engage in anonymously submitted, decentrally 
+                moderated content on public platforms.
+
+                <h3>Longer Version:</h3>
+                Some topics are hard to talk about. Sometimes you have no one to turn to. Sometimes 
+                there are things that you just need to get off your chest. There are countless reasons 
+                why a public platform which posts anonymous users' submissions can be beneficial.
+                <br/><br/>
+
+                However, with anonymity comes many potential issues. Thus, such a platform would need 
+                some type of content moderation. There are many ways in 
+                which the content can be moderated. Two common methods are 1.) a single person or group 
+                of people deciding with their own judgement before posting each submission, and 2.) users 
+                reporting content upon seeing it posted publicly. While the former requires a heavy burden 
+                on a small number of people and can also lead to bias in moderation, the latter requires 
+                users to be proactive and also does not guarantee any post as being moderated. Thus, both 
+                of these methods are imperfect.
+                <br/><br/>
+
+                This is precisely the problem that Decent Mod attempts to solve. We believe that there 
+                should not be a small number of people as being the sole determiners of what should and 
+                should not be on a platform, but rather that that decision should be a reflection of the 
+                members of the user base. We also believe that no content should be published completely 
+                unmoderated, particularly when there is no author attached to it. Thus, we introduce 
+                our Decent Mod moderation scheme: community sampled active moderation, or as we like  
+                to call it, <strong>decentralized moderation</strong>.
+                
+                <h3>System Details:</h3>
+                The way this system works is as follows. When users make a submission, they are required 
+                to moderate some number of pending submissions before their submission is finalized and 
+                submitted for review. The moderation process consists of the user being shown an unmoderated 
+                submission, and the user indicating whether or not they think that submission should be 
+                posted publicly. When a pending submission gets enough approval, it will be posted publicly automatically.
+
+                <h3 id="Rep-Secret-Description">Rep-Secret:</h3>
+                A unique feature about this system is the Rep-Secret. Upon making a submission, users 
+                may opt to attach a secret pseudonym to it, called a 
+                Rep-Secret. If a user supplies a Rep-Secret, they can 
+                come back to the submission portal at a later time and check the status of their submission 
+                (pending, accepted, rejected), and if accepted, the submission number. Additionally, if a 
+                user consistenly uses the same Rep-Secret, they can build up reputation by moderating 
+                accurately, as reflected by their Rep-Score. The more a user moderates in the same way as 
+                other users, the higher their Rep-Score becomes. Higher Rep-Scores give your moderations a 
+                higher weight and allow your submissions to be published quicker. Caution though--make sure 
+                you use a sufficiently unique Rep-Secret that contains no personally identifiable 
+                information, because if someone guesses it, they can make submissions and moderations, 
+                and even view previous submissions using that Rep-Secret. NEVER share your Rep-Secret with 
+                anyone.
+
+                <h3>Additional Features:</h3>
+                <ul>• Leave anonymous <strong>comments</strong> on posts with ease</ul>
+                <ul>• Make anonymous <strong>replies to comments</strong> on posts</ul>
+                <ul>• Make comments on your own submissions verified <strong>"As OP"</strong> (if used Rep-Secret)</ul>
+                <ul>• See <strong>date</strong> of submission (on some platforms)</ul>
+                <ul>• Select a <strong>content warning</strong> in moderation</ul>
+
+                <h3>FAQs:</h3>
+                <strong>Q.)</strong> Why should I trust you?<br/>
+                <strong>A.)</strong> While we commit to using the minimum amount of data possible that 
+                allows for proper functioning of our system, you don't have to trust, or even believe us! 
+                The submission portal will never ask for any personally identifiable information. You 
+                should be aware though, that there are certain metadata that you may be unknowingly giving 
+                to all sites you visit (IP address, time of day, etc.). If you want the best privacy, 
+                you can consider looking into a VPN, or using the Tor browser. But rest assured that we are 
+                extremely uninterested in your personal information (no offense), and far more interested 
+                in created a useful system.<br/><br/>
+                <strong>Q.)</strong> Can I view unmoderated content using this system?<br/>
+                <strong>A.)</strong> Yes. While unmoderated content will never be published to one of the 
+                associated social media sites, everytime you make a submission and moderate, you will be 
+                viewing unmoderated submissions. We realize requiring users to view unmoderated content 
+                is undesirable, but we believe it is the best solution.<br/><br/>
+                <strong>Q.)</strong> What's stopping me from making a few bad submissions, and then 
+                moderating them myself to push them all through to publication?<br/>
+                <strong>A.)</strong> There are a number of security measures put in place to defend against 
+                sybil attacks (as described here), and other attacks. However, as this system truly cannot 
+                tell the identity of those making submissions, there is no guarantee that these types of 
+                attacks cannot happen. That being said, there will always be a dev on standby incase 
+                anything goes (clearly) awry.<br/><br/>
+                <strong>Q.)</strong> When I hear "decentralized", I think of block-chain technology. Does 
+                this use that?<br/>
+                <strong>A.)</strong> No.<br/><br/>
+                <strong>Q.)</strong> Why does this site look like a Google Form?<br/>
+                <strong>A.)</strong> We have no creative design capabilities whatsoever.<br/><br/>
+                <!-- <strong>Q.)</strong> Who is/are the makers behind this?<br/>
+                <strong>A.)</strong> Meet the team on our <a href='About%20Us'>About Us</a> page!<br/><br/> -->
+
+                Have any other questions/comments/concerns for us? Send us an email at 
+                <a href='mailto:decentmodteam@gmail.com'>decentmodteam@gmail.com</a>.<br/>
+            </div>
+        </div>
+    </body>
+<!--     <script>
+        console.log('hello javascript!');
+        console.log('{{type}}')
+
+        // headers
+        const INIT = 'init'
+        const MOD = 'mod'
+        const SUBMITTED = 'submitted'
+        const REP_STATS = 'rep_stats'
+        // sub types
+        const CONFESSION = 'confession'
+        const COMMENT = 'comment'
+        const REPLY = 'reply'
+        // statuses
+        const PENDING = 'pending'
+        const REJECTED = 'rejected'
+        const ACCEPTED = 'accepted'
+        const POSTED = 'posted'
+        // hard coded (long) texts
+        const completed_submission_text = 'Your submission has been submitted for review. The average time between submission and publish time is {}. If you submitted your confession with your Rep-Secret, you can check the status of this and all past submissions by entering your Rep-Secret on the main submission page.'
+        const rep_sec_info = "Attach a secret pseudonym to your submissions. Benefits include the ability to check old submissions' statuses, quicker time to post, and <a href='/privacy' rel='noopener noreferrer' target='_blank'>more</a>. DO NOT SHARE YOUR REP-SECRET WITH ANYBODY."
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function short_date(dtstr) {
+            dt = new Date(dtstr);
+            let year = String(dt.getFullYear()).substring(2,4);
+            let month = dt.getMonth() + 1;
+            let day = dt.getDate();
+            return month + '/' + day + '/' + year;
+        }
+
+        function short_time(dtstr) {
+            dt = new Date(dtstr);
+            let hour24 = dt.getHours();
+            let minute = dt.getMinutes();
+            let ampm = hour24 < 12 ? 'am' : 'pm';
+            let hour = (hour24 % 12) == 0 ? 12 : (hour24 % 12);
+            return hour + ':' + String(minute).padStart(2,'0') + ampm;
+        }
+
+        function short_dt(dtstr) {
+            return short_date(dtstr) + ',&nbsp' + short_time(dtstr);
+            // return '08/08/22, 12:00pm';
+        }
+
+        function sec_to_time(sec) {
+            let days = Math.floor(sec / 60 / 60 / 24)
+            sec = sec - (days * 60 * 60 * 24)
+            let hours = Math.floor(sec / 60 / 60)
+            sec = sec - (hours * 60 * 60)
+            let minutes = Math.floor(sec / 60)
+            sec = sec - (minutes * 60)
+            let seconds = Math.floor(sec)
+            return days + ' day' + (days == 1 ? '' : 's') + ', ' + 
+                hours + ' hour' + (hours == 1 ? '' : 's') + ', ' + 
+                minutes + ' minute' + (minutes == 1 ? '' : 's') + ', and ' + 
+                seconds + ' second' + (seconds == 1 ? '' : 's')
+        }
+
+        function sanitize(text) {
+            return $('<div>').text(text).html();
+        }
+
+        function info_row_html(label, value) {
+            return "<div class='info_row'><div class='info_label'>" + label + "</div><div class='info_value'>" + value + "</div></div>";
+        }
+
+        function nice(db_name) {
+            if (db_name == PENDING)
+                return 'Pending';
+            else if (db_name == REJECTED)
+                return 'Rejected';
+            else if (db_name == ACCEPTED)
+                return 'Accepted';
+            else if (db_name == POSTED)
+                return 'Posted';
+            else if (db_name == CONFESSION)
+                return 'Confession';
+            else if (db_name == COMMENT)
+                return 'Comment';
+            else if (db_name == REPLY)
+                return 'Reply'
+            else return db_name;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        const csrftoken = getCookie('csrftoken');
+        const type = '{{type}}';
+        const parent_num = (type == CONFESSION) ? null : '{{parent_num}}';
+        console.log('parent_num:', parent_num);
+        var as_op = false;
+        var modded = [];
+        var subs = {};
+
+        function rec_repstats(response) {
+            // response = { header, [last_used, rep_score, t1_err, t2_err, subs_list, percentiles, op_reply] }
+            // subs_list[0] = { id, type, content, yays, nays, status, sub_num, dt_sub, dt_decided }
+            // percentiles = [t1_error, t2_error, rep-score]
+            if (!('rep_score' in response)) {
+                $('#rep_score').text('N/A');
+                $('#rep_stats').html('This Rep-Secret has never been used.');
+                return;
+            }
+            subs = {}
+            let subs_list = response.subs_list;
+            let pcts = response.percentiles
+            for (i = 0; i < pcts.length; i++)
+                pcts[i] = pcts[i].toFixed(0)
+            let last_used_html = "<div>Last&nbspUsed:&nbsp" + short_dt(response.last_used) + "</div>";
+            let rep_score_html = "<div>Rep-Score:&nbsp" + response.rep_score.toFixed(3) + "&nbsp(" + pcts[2] + "%ile)</div>";
+            let t1_err = "<div>Type I Error:&nbsp" + response.t1_err.toFixed(3) + "&nbsp(" + pcts[0] + "%ile)</div>";
+            let t2_err = "<div>Type II Error:&nbsp" + response.t2_err.toFixed(3) + "&nbsp(" + pcts[1] + "%ile)</div>";
+
+            let subs_list_html = '<div>Past Submissions:</div><span class="hint">';
+            // construct html
+            for (const s of subs_list) {
+                subs[s.id] = s;
+                let innerHTML = info_row_html(short_date(s.dt_sub), nice(s.status));
+                subs_list_html += '<div id="' + s.id + '" onclick="show_sub_dets(\'' + s.id + '\')">' + innerHTML + '</div>';
+            }
+            subs_list_html += '</span>'
+            $('#rep_stats').html(last_used_html + rep_score_html + t1_err + t2_err + subs_list_html);
+            if (response.op_reply) {
+                $('.toggle_op').show();
+                as_op = true;
+            } else {
+                $('.toggle_op').hide();
+            }
+        }
+
+        function rec_mod(response) {
+            // response = { header, mods_left, mod_id, mod_type, mod_content }
+            modded.push(response.mod_id); // ensure we don't moderate same sub twice
+            $('.mod_prompt_container').show();
+            $('#response_msg').text(response.mod_content); // more to mod
+            $('#mod_type').text(nice(response.mod_type));
+            $('#mod_info').html("Moderations&nbspLeft:&nbsp" + response.mods_left);
+            $('#cw_dropdown').hide();
+            $('#show_cw').show();
+            for (let i = 1; i <= 6; i++)
+                $('#cw'+i).prop('checked', false);
+        }
+
+        function rec_submitted(response) {
+            // response = { header, avg_delay }
+            $('.mod_prompt_container').hide();
+            $('#response_msg').text(''); // clear mod content
+            $('#mod_info').text(''); // left to mod number
+            $('#sub_content').val(''); // clear submission box
+            $('#rep_secret_input').val(''); // clear rep-secret box
+            hide_rep_stats();
+            $('.sub_prompt_container').show();
+            let head = 'Submission Under Review';
+            let body = completed_submission_text.replace('{}', sec_to_time(response.avg_delay));
+            show_info(head, body);
+            modded = [] // reset moderated list
+        }
+
+        function receive_response(response) {
+            if ('header' in response) {
+                header = response.header;
+                if (header == REP_STATS) {
+                    rec_repstats(response);
+                } else if (header == MOD) {
+                    rec_mod(response);
+                } else if (header == SUBMITTED) {
+                    rec_submitted(response);
+                } else {
+                    console.log('unknown header:', header)
+                }
+            } else {
+                console.log('no header')
+            }
+        }
+
+        function send_json(json_data) {
+            let xhr = new XMLHttpRequest();
+            let url = "";
+            console.log('url', url)
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    console.log('GOT RESPONSE:', response);
+                    receive_response(response)
+                }
+            };
+            let data = JSON.stringify(json_data);
+            xhr.send(data);
+        }
+
+        function show_sub_dets(id) {
+            s = subs[id];
+            let head = '';
+            if (s.status == PENDING || s.status == REJECTED)
+                head += nice(s.status) + ' ';
+            head += nice(s.type);
+            if (s.type == COMMENT)
+                head += ' to Confession';
+            else if (s.type == REPLY)
+                head += ' to Comment';
+            if (s.type != CONFESSION)
+                head += '&nbsp#' + s.parent_num;
+            else if (s.status == ACCEPTED || s.status == POSTED)
+                head += '&nbsp#' + s.sub_num;
+            let body = info_row_html('Submitted:', short_dt(s.dt_sub));
+            if (s.status != PENDING) {
+                body += info_row_html('Moderated:', short_dt(s.dt_decided));
+            }
+            fitted_content = s.content.length > 200 ? s.content.substring(0,200) + '...' : s.content
+            body += '<div class="spaceme">' + sanitize(fitted_content) + '</div>';
+            show_info(head, body);
+        }
+
+        function show_info(head, body) {
+            $('#dark').show();
+            $('#info_head').html(head);
+            $('#info').html(body);
+            $('.info_box').show();
+        }
+
+        function hide_info() {
+            $('.info_box').hide();
+            $('#dark').hide();
+        }
+
+        function show_rep_stats() {
+            let rep_secret = $('#rep_secret_input').val();
+            get_rep_stats(rep_secret);
+            $('#rep_secret_input').attr('type', 'text');
+            $('#rep_stats').show();
+            $('#rep_hide_btn').show();
+        }
+
+        function hide_rep_stats() {
+            $('#rep_secret_input').attr('type', 'password');
+            $('#rep_stats').hide();
+            $('#rep_hide_btn').hide();
+        }
+
+        function get_rep_stats(rep_secret) {
+            data = {
+                'header': REP_STATS,
+                'rep_secret': rep_secret,
+                'parent_num': parent_num
+            }
+            send_json(data);
+        }
+
+        function show_go_to_comment_prompt() {
+            let head = 'Make Comment';
+            let body = 'Leave an anonymous comment on existing Confession post?<br/><br/>';
+            body += 'Confession #<input class="short_input" id="parent_num_input" placeholder="12345"/>&nbsp';
+            body += '<button class="nice_button" id="go_btn" onclick="go_to_comment()">Go</button><br/>';
+            show_info(head, body);
+        }
+
+        function go_to_comment() {
+            let num = $('#parent_num_input').val().trim();
+            if (num != '' && Number.isInteger(Number(num.replace(/\./g, '')))) {
+                window.open('/{{group}}/'+ num, '_blank');
+            } else {
+                alert(
+                    'Enter a valid confession (or comment) number. ' +
+                    'Non-existing Confession numbers ' +
+                    'will lead to a 404 Not Found Error.'
+                );
+            }
+        }
+
+        function init_sub(e) {
+            e.preventDefault();
+
+            data = {
+                'header': INIT,
+                'parent_num': parent_num,
+                'sub_content': $('#sub_content').val(),
+                'rep_secret': $('#rep_secret_input').val(),
+                'modded': [],
+                'toggle': $('#toggle').is(":checked") && (as_op || parent_num == null)
+            }
+            if (data.sub_content != '') {
+                send_json(data);
+                $('.sub_prompt_container').hide();
+            } else {
+                $('#sub_content').attr('placeholder','Write something first silly!');
+            }
+        }
+
+        function moderate(e, decision) {
+            e.preventDefault();
+            let quality = 0
+            // if (document.getElementById('like').checked) quality = 1
+            // else if (document.getElementById('dislike').checked) quality = -1
+            let cw = {
+                'cw1': $('#cw1').is(":checked"),
+                'cw2': $('#cw2').is(":checked"),
+                'cw3': $('#cw3').is(":checked"),
+                'cw4': $('#cw4').is(":checked"),
+                'cw5': $('#cw5').is(":checked"),
+                'cw6': $('#cw6').is(":checked")
+            }
+            data = {
+                'header': MOD,
+                'parent_num': parent_num,
+                'sub_content': $('#sub_content').val(),
+                'rep_secret': $('#rep_secret_input').val(),
+                'modded': modded,
+                'toggle': $('#toggle').is(":checked") && (as_op || parent_num == null),
+                'yay': decision,
+                'quality': quality,
+                'cw': cw
+            };
+            if (data.sub_content != '') {
+                send_json(data);
+            }
+        }
+
+        // group title
+        $('#group_name').on('click', function(e) { window.location.href = '/{{group}}'; });
+        // submit button
+        $('#submit').on('click', function(e) { init_sub(e); });
+        // OK button
+        $('#ok').on('click', function(e) { moderate(e, true); });
+        // NOT OK button
+        $('#not_ok').on('click', function(e) { moderate(e, false); });
+        // Check Rep-Stats button
+        $('#rep_btn').on('click', function(e) { show_rep_stats(); });
+        // Hide Rep-Stats button
+        $('#rep_hide_btn').on('click', function(e) { hide_rep_stats(); });
+        // Hides info box
+        $('#info_btn').on('click', function(e) { hide_info(); });
+        // shows rep description
+        $('#rep_desc').on('click', function(e) { show_info('Rep-Secret', rep_sec_info); });
+        // (new) Go to comment pop-up button
+        $('#comment_hint').on('click', function(e) { show_go_to_comment_prompt(e); });
+        // CW drop down show
+        $('#show_cw').on('click', function(e) { $('#cw_dropdown').show(); $('#show_cw').hide(); })
+
+    </script> -->
+</html>

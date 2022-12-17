@@ -1,0 +1,162 @@
+<!DOCTYPE html/>
+<html>
+    <head>
+        {% load static %}
+        <script src="{% static 'secport/jquery.js' %}"></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DM Dashboard</title>
+    </head>
+    <body style="background: #cdcdcd;">
+        {% csrf_token %}
+        <input id="input" type="utf-8" name="code">
+        <input id="sub_group" type="utf-8" name="" style="display: none;">
+        <textarea id="sub_content" rows="8" placeholder='Dev submission here' style="display: none;"></textarea>
+        <button id='submit' class='nice_button' style="display: none;">Submit</button>
+        <div id="pending"></div>
+    </body>
+    <script>
+        DEV = 'dev'
+        SUBMITTED = 'submitted'
+        const csrftoken = getCookie('csrftoken');
+        console.log('control center');
+
+        let verified = false;
+
+        // copied from submission.html <-- TODO: use from that file probably
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function short_date(dtstr) {
+            dt = new Date(dtstr);
+            let year = String(dt.getFullYear()).substring(2,4);
+            let month = dt.getMonth() + 1;
+            let day = dt.getDate();
+            return month + '/' + day + '/' + year;
+        }
+
+        function short_time(dtstr) {
+            dt = new Date(dtstr);
+            let hour24 = dt.getHours();
+            let minute = dt.getMinutes();
+            let ampm = hour24 < 12 ? 'am' : 'pm';
+            let hour = (hour24 % 12) == 0 ? 12 : (hour24 % 12);
+            return hour + ':' + String(minute).padStart(2,'0') + ampm;
+        }
+
+        function short_dt(dtstr) {
+            return short_date(dtstr) + ',&nbsp' + short_time(dtstr);
+            // return '08/08/22, 12:00pm';
+        }
+
+        function receive_response(response) {
+            if ('header' in response) {
+                header = response.header;
+                // if (header == REP_STATS) {
+                //     rec_repstats(response);
+                // } else if (header == MOD) {
+                //     rec_mod(response);
+                // } else
+                if (header == SUBMITTED) {
+                    //rec_submitted(response);
+                    console.log('submitted as dev')
+                } else if (header == DEV) {
+                    verified = true;
+                    rec_pending(response)
+                } else {
+                    console.log('unknown header:', header)
+                }
+            } else {
+                console.log('no header')
+            }
+        }
+
+        function send_json(json_data) {
+            let xhr = new XMLHttpRequest();
+            let url = "";
+            console.log('url', url)
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    console.log('GOT RESPONSE:', response);
+                    receive_response(response)
+                }
+            };
+            let data = JSON.stringify(json_data);
+            xhr.send(data);
+        }
+
+        function rec_pending(response) {
+            if (response.header != DEV)
+                return;
+            let subs_list_html = ''
+            subs_list = response.pending;
+            for (const s of subs_list) {
+                innerHTML = " " + s.group + ", " + short_dt(s.dt_sub) + ", [" + s.content + "]";
+                buttonHTML = '<button id="' + s.id + '"onclick="accept_sub(\'' + s.id + '\')">';
+                subs_list_html += '<div>' + buttonHTML + innerHTML + '</div>';
+            }
+            console.log(subs_list_html);
+            $('#pending').html(subs_list_html);
+            $('#sub_group').show();
+            $('#sub_content').show();
+            $('#submit').show();
+        }
+
+        function accept_sub(sub_id) {
+            let json = {
+                'header': 'accept',
+                'sub_id': sub_id
+            }
+            console.log('sending json', json);
+            send_json(json);
+            $('#' + sub_id).hide();
+        }
+
+        function dev_sub(e) {
+            if (!verified)
+                return;
+            e.preventDefault();
+
+            data = {
+                'header': 'dev_post',
+                'group': $('#sub_group').val(),
+                'content': $('#sub_content').val()
+            }
+            console.log(data);
+            send_json(data);
+        }
+
+        let input = document.getElementById("input")
+        input.addEventListener("keydown", function(e) {
+            if (e.key == "Enter") {
+                let json = {
+                    'header': 'code',
+                    'code': e.target.value
+                }
+                console.log("sending code:", json);
+                send_json(json);
+            }
+        })
+
+        // submit button
+        $('#submit').on('click', function(e) { dev_sub(e); });
+
+    </script>
+</html>
